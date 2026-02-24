@@ -349,11 +349,29 @@
     pointer-events: none;
   }
 
+  .resize-handle {
+    width: 6px;
+    flex-shrink: 0;
+    cursor: col-resize;
+    background: var(--border);
+    border-radius: 3px;
+    transition: background 0.2s;
+    position: relative;
+    z-index: 5;
+  }
+  .resize-handle:hover, .resize-handle.dragging { background: var(--purple); }
+  .resize-handle::after {
+    content: '';
+    position: absolute;
+    inset: 0 -8px;
+  }
+
   .chats-col {
     display: flex;
     gap: 4px;
     width: 480px;
     flex-shrink: 0;
+    min-width: 200px;
   }
 
   .chat-wrapper {
@@ -472,7 +490,8 @@
       </div>
     </div>
 
-    <div class="chats-col">
+    <div class="resize-handle" id="resizeHandle"></div>
+    <div class="chats-col" id="chatsCol">
       <div class="chat-wrapper" id="cw1">
         <div class="chat-header">Chat 1</div>
         <iframe id="chatFrame1" src="about:blank"></iframe>
@@ -541,6 +560,37 @@
     const header = document.querySelector(`#cw${num} .chat-header`);
     header.textContent = `${channel} – Chat`;
   }
+
+  // Resize handle
+  const handle = document.getElementById('resizeHandle');
+  const chatsCol = document.getElementById('chatsCol');
+  let isResizing = false;
+
+  handle.addEventListener('mousedown', e => {
+    isResizing = true;
+    handle.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!isResizing) return;
+    const content = document.querySelector('.content');
+    const contentRect = content.getBoundingClientRect();
+    const newWidth = contentRect.right - e.clientX - 4;
+    if (newWidth >= 200 && newWidth <= contentRect.width * 0.75) {
+      chatsCol.style.width = newWidth + 'px';
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!isResizing) return;
+    isResizing = false;
+    handle.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
 
   // Allow Enter in stream inputs
   document.getElementById('s1input').addEventListener('keydown', e => { if (e.key === 'Enter') loadStream(1); });
