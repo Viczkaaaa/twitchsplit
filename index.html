@@ -301,6 +301,8 @@
   }
 
   .stream-wrapper iframe {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     border: none;
@@ -350,7 +352,7 @@
   .chats-col {
     display: flex;
     gap: 4px;
-    width: 320px;
+    width: 480px;
     flex-shrink: 0;
   }
 
@@ -526,7 +528,7 @@
     const sw = document.getElementById(`sw${num}`);
     sw.innerHTML = `<div class="stream-num-badge">Stream ${num}</div>`;
     const iframe = document.createElement('iframe');
-    iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${parent}&muted=${num === 2 ? 'true' : 'false'}`;
+    iframe.src = `https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${parent}&muted=${num === 2 ? 'true' : 'false'}&layout=video`;
     iframe.allowFullscreen = true;
     iframe.allow = "autoplay; fullscreen";
     sw.appendChild(iframe);
